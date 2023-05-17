@@ -27,7 +27,7 @@ final class QuestionViewController: UIViewController {
     // MARK: - Private Properties
     private let questions = Question.getQuestions()
     private var questionIndex = 0
-    private var answerChosen: [Answer] = []
+    private var answersChosen: [Answer] = []
     private var currentAnswers: [Answer] {
         questions[questionIndex].answers
     }
@@ -44,11 +44,12 @@ final class QuestionViewController: UIViewController {
         
     }
     
+    
     // MARK: - IBActions
     @IBAction func singleAnswerButtonPressed(_ sender: UIButton) {
         guard let buttonIndex =  singleButtons.firstIndex(of: sender) else { return }
         let currentAnswer = currentAnswers[buttonIndex]
-        answerChosen.append(currentAnswer)
+        answersChosen.append(currentAnswer)
         
         goTONextQuestion()
     }
@@ -57,7 +58,7 @@ final class QuestionViewController: UIViewController {
     @IBAction func multipleAnswerButtonPressed() {
         for (multipleSwitch, answer) in zip(multipleSwitches, currentAnswers) {
             if multipleSwitch.isOn {
-                answerChosen.append(answer)
+                answersChosen.append(answer)
             }
         }
         goTONextQuestion()
@@ -65,14 +66,23 @@ final class QuestionViewController: UIViewController {
     
     @IBAction func rangedAnswerButtonPressed() {
         let index = lrintf(rangedSlider.value)
-        answerChosen.append(currentAnswers[index])
+        answersChosen.append(currentAnswers[index])
         goTONextQuestion()
     }
     
     deinit {
         print("QuestionViewController is deallocated")
     }
+    
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        if (segue.identifier == "resultSegue") {
+            if let resultViewController = segue.destination as? ResultViewController {
+                resultViewController.answersChosen = answersChosen
+            }
+        }
+    }
 }
+
 
 // MARK: - Private Methods
 private extension QuestionViewController {
